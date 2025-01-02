@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel serve index.html",
-    "build": "parcel build index.html --public-url .",
+    "start": "rm -rf dist .parcel-cache && parcel serve index.html",
+    "build": "rm -rf dist .parcel-cache && NODE_ENV=production parcel build index.html --public-url .",
     "deploy": "gh-pages -d dist"
   },
   "keywords": [],
@@ -18,5 +18,5 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.16"
   },
-  "homepage": "https://khp9798.github.io/ai-ssafy/"
+  "homepage": "https://beomi.github.io/ssafy-2024-frontend/"
 }
