@@ -63,8 +63,7 @@ function scrollToBottom() {
 
 async function getAssistantResponse(userMessage) {
   const mode = apiSelector.value;
-  const url =
-    mode === "assistant" ? `${BASE_URL}/health` : `${BASE_URL}/chat`;
+  const url =`${BASE_URL}/chat`;
 
   const response = await fetch(url, {
     method: "POST",
