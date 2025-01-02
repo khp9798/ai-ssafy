@@ -1,17 +1,17 @@
 <template>
-  <div class="container">
+  <div :class="['chat-container', darkMode ? 'dark' : 'light']">
     <div class="card">
-      <div class="icon">
-        <MessageCircle />
-      </div>
-      <h1 class="title">환영합니다!</h1>
+      <header class="header">
+        <div class="icon">
+          <MessageCircle />
+        </div>
+        <h1 class="title">취뽓</h1>
+      </header>
       <p class="description">
-        AI-powered 취뽓으로 새로운 가능성을 발견하세요.
+        AI 기반 신년사 분석 서비스로 기업의 인사이트를 탐구하세요.
       </p>
 
-      <RouterLink to="/chat" class="chat-button">
-        시작하기
-      </RouterLink>
+      <RouterLink to="/chat" class="chat-button"> 시작하기 </RouterLink>
     </div>
   </div>
 </template>
@@ -19,26 +19,49 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import { MessageCircle } from "lucide-vue-next";
+import { ref } from "vue";
+
+const darkMode = ref(false);
 </script>
 
 <style scoped>
-.container {
-  min-height: 100vh;
+.chat-container {
   display: flex;
-  align-items: center;
   justify-content: center;
-  padding: 1rem;
-  background: linear-gradient(to bottom right, #f9fafe, #c4c5ff);
+  align-items: center;
+  min-height: 100vh;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+.chat-container.light {
+  --background-color: #f4f4f9;
+  --text-color: #1e293b;
+  --card-bg: #ffffff;
+  --icon-bg: #e0f2fe;
+  --icon-color: #4a90e2;
+  --button-bg: linear-gradient(to right, #4a90e2, #4a90e2);
+  --button-hover-bg: linear-gradient(to right, #4a90e2, #4a90e2);
+}
+
+.chat-container.dark {
+  --background-color: #1e1e2e;
+  --text-color: #f4f4f9;
+  --card-bg: #2e2e4a;
+  --icon-bg: #3a3b5e;
+  --icon-color: #6366f1;
+  --button-bg: linear-gradient(to right, #4a90e2, #4f46e5);
+  --button-hover-bg: linear-gradient(to right, #4f46e5, #4338ca);
 }
 
 .card {
-  max-width: 28rem;
-  width: 100%;
-  background-color: #ffffff;
-  border-radius: 1.25rem;
+  background-color: var(--card-bg);
+  border-radius: 12px;
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  padding: 2.5rem;
+  padding: 2rem;
   text-align: center;
+  max-width: 400px;
+  width: 100%;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -47,38 +70,42 @@ import { MessageCircle } from "lucide-vue-next";
   box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
 }
 
+.header {
+  margin-bottom: 1.5rem;
+}
+
 .icon {
-  width: 4.5rem;
-  height: 4.5rem;
-  margin: 0 auto 1.5rem auto;
-  color: #6366f1;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #e0e7ff;
+  width: 60px;
+  height: 60px;
+  margin: 0 auto 1rem;
+  background-color: var(--icon-bg);
   border-radius: 50%;
+  color: var(--icon-color);
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #1e293b;
-  margin-bottom: 1.2rem;
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--text-color);
+  margin-bottom: 0.5rem;
 }
 
 .description {
-  font-size: 1.1rem;
-  color: #6b7280;
-  margin-bottom: 2.5rem;
-  line-height: 1.6;
+  font-size: 1rem;
+  color: var(--text-color);
+  margin-bottom: 2rem;
+  line-height: 1.5;
 }
 
 .chat-button {
   display: inline-block;
-  background: linear-gradient(to right, #6366f1, #4f46e5);
-  color: white;
+  background: var(--button-bg);
+  color: #ffffff;
   font-weight: 600;
-  padding: 0.8rem 1.8rem;
+  padding: 0.8rem 1.5rem;
   border-radius: 9999px;
   text-decoration: none;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -86,7 +113,7 @@ import { MessageCircle } from "lucide-vue-next";
 }
 
 .chat-button:hover {
-  background: linear-gradient(to right, #4f46e5, #4338ca);
+  background: var(--button-hover-bg);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 </style>

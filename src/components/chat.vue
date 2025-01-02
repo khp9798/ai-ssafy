@@ -3,8 +3,16 @@
     <!-- Main Chat -->
     <div class="chat-main">
       <header class="chat-header">
+        <div class="header-content">
+          <img
+            src="/src/assets/logo/logo.png"
+            alt="Service Logo"
+            class="logo"
+          />
+          <h1>신년사 분석 챗봇</h1>
+        </div>
         <button @click="toggleDarkMode" class="toggle-btn">
-          {{ darkMode ? "Light Mode" : "Dark Mode" }}
+          {{ darkMode ? "🌞 Light Mode" : "🌙 Dark Mode" }}
         </button>
       </header>
       <div class="chat-box">
@@ -19,14 +27,13 @@
           >
             <div class="message-container">
               <div
-                :class="[
-                  'avatar',
-                  msg.role === 'user' ? 'user-avatar' : 'assistant-avatar',
-                ]"
+                v-if="msg.role === 'assistant' && msg.content.includes('|')"
+                class="message styled-table"
               >
-                {{ msg.role === "user" ? "Q" : "A" }}
+                <div v-html="renderMarkdown(msg.content)"></div>
               </div>
               <div
+                v-else
                 class="message"
                 v-html="
                   msg.role === 'assistant'
@@ -37,16 +44,22 @@
               <span class="timestamp">{{ getCurrentTime() }}</span>
             </div>
           </li>
+          <li v-if="loading" class="assistant">
+            <div class="message-container loading-container">
+              <div class="spinner"></div>
+              <div class="loading-text">분석 중...</div>
+            </div>
+          </li>
         </ul>
       </div>
       <form @submit.prevent="sendMessage" class="input-container">
         <input
           v-model="userMessage"
           type="text"
-          placeholder="당신이 궁금한 기업에 대해 질문하세요! 기업 신년사를 분석해 답변해드립니다!"
+          placeholder="궁금한 기업명을 입력하세요!"
         />
-        <button type="submit">
-          <SendIcon class="w-5 h-5" />
+        <button type="submit" class="send-button">
+          <SendIcon class="icon" />
         </button>
       </form>
     </div>
@@ -60,40 +73,39 @@ import { useCounterStore } from "@/stores/counter";
 import { SendIcon } from "lucide-vue-next";
 import { marked } from "marked";
 
-// 서버 URL 설정
 const BASE_URL = useCounterStore().BASE_URL;
-
-const userMessage = ref(""); // 사용자 입력 메시지
-const messages = ref([]); // 메시지 저장 배열
-const darkMode = ref(false); // 다크 모드 상태
+const userMessage = ref("");
+const messages = ref([]);
+const darkMode = ref(false);
+const loading = ref(false);
 
 const toggleDarkMode = () => {
   darkMode.value = !darkMode.value;
 };
 
 const sendMessage = async () => {
-  if (!userMessage.value.trim()) return; // 빈 메시지 처리
+  if (!userMessage.value.trim()) return;
 
-  // 사용자 메시지 추가
   messages.value.push({ role: "user", content: userMessage.value });
+  loading.value = true;
 
   try {
-    // 서버로 메시지 전송
     const response = await axios.post(`${BASE_URL}chat`, {
       message: userMessage.value,
     });
 
-    // 서버 응답 추가
     messages.value.push({ role: "assistant", content: response.data.reply });
   } catch (error) {
     console.error("Error:", error);
     messages.value.push({
       role: "assistant",
-      content: "Error occurred while connecting to the server.",
+      content: "서버와 연결 중 오류가 발생했습니다.",
     });
+  } finally {
+    loading.value = false;
   }
 
-  userMessage.value = ""; // 입력 필드 초기화
+  userMessage.value = "";
 };
 
 const getCurrentTime = () => {
@@ -101,64 +113,74 @@ const getCurrentTime = () => {
   return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 };
 
-// Markdown 렌더링 함수
 const renderMarkdown = (text) => {
-  return marked(text, { sanitize: true }); // XSS 방지를 위해 sanitize 옵션 사용
+  return marked(text, { sanitize: true });
 };
 </script>
 
 <style scoped>
-/* 전체 화면 채우기 */
 .chat-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 99vw;
-  height: 97vh;
+  width: 100vw;
+  height: 100vh;
   background: var(--background-color);
   color: var(--text-color);
 }
 
 .chat-container.light {
-  --background-color: #f3f5fc;
+  --background-color: #f4f4f9;
   --text-color: #333;
-  --header-bg: #6a5df4;
-  --user-bg: #e0f7fa;
-  --assistant-bg: #fff9c4;
+  --header-bg: #4a90e2;
+  --user-bg: #e8f5fe;
+  --assistant-bg: #f0f0f0;
 }
 
 .chat-container.dark {
   --background-color: #1e1e2e;
-  --text-color: #e0e0e0;
+  --text-color: #dcdcdc;
   --header-bg: #2e2e4a;
   --user-bg: #4a4a6a;
-  --assistant-bg: #3a3a5a;
+  --assistant-bg: #333;
 }
 
 .chat-main {
-  width: 100%; /* 전체 너비 */
-  height: 100%; /* 전체 높이 */
-  background: white;
   display: flex;
   flex-direction: column;
+  width: 90%;
+  max-width: 800px;
+  height: 90%;
+  background: var(--background-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .chat-header {
   background: var(--header-bg);
-  color: white;
-  text-align: center;
-  padding: 22px;
-  font-weight: bold;
+  color: #fff;
+  padding: 16px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+}
+
+.logo {
+  height: 40px;
+  margin-right: 10px;
 }
 
 .chat-box {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-  background: var(--background-color);
 }
 
 .chat-box ul {
@@ -169,124 +191,138 @@ const renderMarkdown = (text) => {
 
 .chat-box li {
   display: flex;
+  flex-direction: column;
   margin-bottom: 15px;
 }
 
-.user {
-  justify-content: flex-end; /* 사용자 메시지 오른쪽 정렬 */
+.chat-box li.user {
+  align-items: flex-end;
 }
 
-.assistant {
-  justify-content: flex-start; /* Bot 메시지 왼쪽 정렬 */
+.chat-box li.assistant {
+  align-items: flex-start;
 }
 
-.message {
-  background: var(--user-bg);
-  padding: 10px 15px;
-  border-radius: 12px;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
-  font-size: 14px;
-  line-height: 1.5;
-  max-width: 60%; /* 메시지 최대 너비 설정 */
-  display: inline-block;
-}
-
-.user .message {
+.message-container {
+  max-width: 70%;
   background: var(--user-bg);
   color: var(--text-color);
-  align-self: flex-end;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.chat-box li.assistant .message-container {
+  background: var(--assistant-bg);
+}
+
+.styled-table table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 16px;
   text-align: left;
 }
 
-.assistant .message {
-  background: var(--user-bg);
-  color: var(--text-color);
-  align-self: flex-start;
-  text-align: left; /* 텍스트 왼쪽 정렬 */
+.styled-table thead tr {
+  background-color: var(--header-bg);
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.styled-table th,
+.styled-table td {
+  padding: 12px 15px;
+  border: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+  background-color: #f3f3f3;
+}
+
+.styled-table tbody tr:hover {
+  background-color: #f1f1f1;
 }
 
 .timestamp {
   font-size: 12px;
-  color: #aaa;
+  color: #999;
   margin-top: 4px;
-  text-align: right;
+}
+
+.loading-container {
+  display: flex;
+  align-items: center;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #ccc;
+  border-top: 2px solid var(--header-bg);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-text {
+  font-size: 14px;
+  color: var(--text-color);
 }
 
 .input-container {
   display: flex;
-  align-items: center;
-  padding: 10px 16px;
-  background: white;
-  border-top: 1px solid #ddd;
+  padding: 10px;
+  background: var(--header-bg);
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 input {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccc;
+  padding: 12px;
+  border: none;
   border-radius: 8px;
   font-size: 14px;
-  margin-right: 10px;
-  outline: none;
 }
 
-button {
-  padding: 10px 16px;
-  background: var(--header-bg);
-  color: white;
+.send-button {
+  margin-left: 10px;
+  padding: 12px;
+  background: #0066cc;
+  color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
   transition: background 0.3s;
 }
 
-button:hover {
-  background: #5846d6;
+.send-button:hover {
+  background: #005bb5;
 }
 
 .toggle-btn {
-  position: fixed;
-  top: 16px; /* 상단에서 16px */
-  right: 16px; /* 오른쪽에서 16px */
   background: transparent;
-  color: white;
-  border: 1px solid white;
-  padding: 5px 10px;
-  border-radius: 8px;
-  cursor: pointer;
+  color: #fff;
+  border: none;
   font-size: 14px;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.3s;
+  margin-left: auto;
 }
 
 .toggle-btn:hover {
-  background: white;
-  color: var(--header-bg);
-}
-
-.message-container {
-  display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  border-radius: 50%;
-  margin-right: 10px;
-  flex-shrink: 0;
-}
-
-.user-avatar {
-  background: linear-gradient(to bottom right, #f06292, #4fc3f7);
-}
-
-.assistant-avatar {
-  background: linear-gradient(to bottom right, #64b5f6, #3f51b5);
+  color: #f4f4f9;
 }
 </style>
