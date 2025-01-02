@@ -14,7 +14,10 @@
         <button @click="toggleDarkMode" class="toggle-btn">
           {{ darkMode ? "🌞 Light Mode" : "🌙 Dark Mode" }}
         </button>
+        <button @click="openTutorial" class="tutorial-btn">사용법</button>
       </header>
+
+      <!-- Chat Section -->
       <div class="chat-box">
         <ul>
           <li
@@ -52,6 +55,7 @@
           </li>
         </ul>
       </div>
+
       <form @submit.prevent="sendMessage" class="input-container">
         <input
           v-model="userMessage"
@@ -62,6 +66,19 @@
           <SendIcon class="icon" />
         </button>
       </form>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div v-if="showTutorial" class="modal-overlay">
+      <div class="modal-content">
+        <h2>사용 방법</h2>
+        <ul>
+          <li>1. 검색창에 기업명을 입력하세요.</li>
+          <li>2. Enter를 누르면 신년사 분석 결과를 확인할 수 있습니다.</li>
+          <li>3. Dark Mode 버튼으로 화면 테마를 변경할 수 있습니다.</li>
+        </ul>
+        <button @click="closeTutorial" class="close-modal">닫기</button>
+      </div>
     </div>
   </div>
 </template>
@@ -78,9 +95,18 @@ const userMessage = ref("");
 const messages = ref([]);
 const darkMode = ref(false);
 const loading = ref(false);
+const showTutorial = ref(false);
 
 const toggleDarkMode = () => {
   darkMode.value = !darkMode.value;
+};
+
+const openTutorial = () => {
+  showTutorial.value = true;
+};
+
+const closeTutorial = () => {
+  showTutorial.value = false;
 };
 
 const sendMessage = async () => {
@@ -177,44 +203,77 @@ const renderMarkdown = (text) => {
   margin-right: 10px;
 }
 
+.tutorial-btn {
+  background: var(--header-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.tutorial-btn:hover {
+  background: #3a78d7;
+}
+
 .chat-box {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
 }
 
-.chat-box ul {
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: var(--background-color);
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h2 {
+  margin-bottom: 16px;
+  color: var(--text-color);
+}
+
+.modal-content ul {
   list-style: none;
   padding: 0;
-  margin: 0;
-}
-
-.chat-box li {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 15px;
-}
-
-.chat-box li.user {
-  align-items: flex-end;
-}
-
-.chat-box li.assistant {
-  align-items: flex-start;
-}
-
-.message-container {
-  max-width: 70%;
-  background: var(--user-bg);
+  margin: 0 0 16px;
   color: var(--text-color);
-  padding: 12px 16px;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.5;
 }
 
-.chat-box li.assistant .message-container {
-  background: var(--assistant-bg);
+.modal-content ul li {
+  margin-bottom: 8px;
+}
+
+.close-modal {
+  background: var(--header-bg);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.close-modal:hover {
+  background: #3a78d7;
 }
 
 .styled-table table {
