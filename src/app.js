@@ -146,7 +146,7 @@ async function getAssistantResponse(userMessage) {
     if (thread_id) {
       payload.thread_id = thread_id;
     }
-    url = `${BASE_URL}/assistant`;
+    url = `${BASE_URL}/health`;
   } else {
     // Naive mode
     const allMsgs = await getAllMessages();
