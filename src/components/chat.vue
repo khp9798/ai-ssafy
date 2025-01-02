@@ -4,7 +4,7 @@
     <div class="chat-main">
       <header class="chat-header">
         <button @click="toggleDarkMode" class="toggle-btn">
-          {{ darkMode ? 'Light Mode' : 'Dark Mode' }}
+          {{ darkMode ? "Light Mode" : "Dark Mode" }}
         </button>
       </header>
       <div class="chat-box">
@@ -12,17 +12,27 @@
           <li
             v-for="(msg, index) in messages"
             :key="index"
-            :class="{ user: msg.role === 'user', assistant: msg.role === 'assistant' }"
+            :class="{
+              user: msg.role === 'user',
+              assistant: msg.role === 'assistant',
+            }"
           >
             <div class="message-container">
               <div
-                :class="['avatar', msg.role === 'user' ? 'user-avatar' : 'assistant-avatar']"
+                :class="[
+                  'avatar',
+                  msg.role === 'user' ? 'user-avatar' : 'assistant-avatar',
+                ]"
               >
-                {{ msg.role === 'user' ? 'Q' : 'A' }}
+                {{ msg.role === "user" ? "Q" : "A" }}
               </div>
               <div
                 class="message"
-                v-html="msg.role === 'assistant' ? renderMarkdown(msg.content) : msg.content"
+                v-html="
+                  msg.role === 'assistant'
+                    ? renderMarkdown(msg.content)
+                    : msg.content
+                "
               ></div>
               <span class="timestamp">{{ getCurrentTime() }}</span>
             </div>
@@ -33,7 +43,7 @@
         <input
           v-model="userMessage"
           type="text"
-          placeholder="당신이 궁금한 기업에 대해 질문하세요!"
+          placeholder="당신이 궁금한 기업에 대해 질문하세요! 기업 신년사를 분석해 답변해드립니다!"
         />
         <button type="submit">
           <SendIcon class="w-5 h-5" />
@@ -185,11 +195,11 @@ const renderMarkdown = (text) => {
   background: var(--user-bg);
   color: var(--text-color);
   align-self: flex-end;
-  text-align: left; 
+  text-align: left;
 }
 
 .assistant .message {
-  background: var(--user-bg);;
+  background: var(--user-bg);
   color: var(--text-color);
   align-self: flex-start;
   text-align: left; /* 텍스트 왼쪽 정렬 */
@@ -273,12 +283,10 @@ button:hover {
 }
 
 .user-avatar {
-  background: linear-gradient(to bottom right, #f06292, #4fc3f7); 
+  background: linear-gradient(to bottom right, #f06292, #4fc3f7);
 }
 
 .assistant-avatar {
-  background: linear-gradient(to bottom right, #64b5f6, #3f51b5); 
+  background: linear-gradient(to bottom right, #64b5f6, #3f51b5);
 }
-
-
 </style>

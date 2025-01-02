@@ -1,15 +1,8 @@
 <script setup>
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterLink, RouterView } from "vue-router";
 </script>
 
 <template>
-  <!-- <header>
-    <nav>
-      <RouterLink to="/">Home</RouterLink>
-      <RouterLink to="/chat">Chat</RouterLink>
-    </nav>
-  </header> -->
-
   <RouterView />
 </template>
 
