@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export const useCounterStore = defineStore('counter', () => {
 
-    const BASE_URL = "https://ssafy-chatbot.fly.dev/"
+    const BASE_URL = "https://rag-pjt.fly.dev/"
 
     return { BASE_URL }
 

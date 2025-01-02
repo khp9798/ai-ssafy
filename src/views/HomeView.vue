@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h1>가보자</h1>
+        <home />
     </div>
 </template>
 
 <script setup>
-
+import home from '@/components/home.vue';
 </script>
 
 <style scoped>
