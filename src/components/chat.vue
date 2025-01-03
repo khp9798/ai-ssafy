@@ -19,41 +19,36 @@
 
       <!-- Chat Section -->
       <div class="chat-box">
-        <ul>
-          <li
-            v-for="(msg, index) in messages"
-            :key="index"
-            :class="{
-              user: msg.role === 'user',
-              assistant: msg.role === 'assistant',
-            }"
+        <div
+          v-for="(msg, index) in messages"
+          :key="index"
+          :class="[
+            'message-container',
+            msg.role === 'user' ? 'user-message' : 'assistant-message',
+          ]"
+        >
+          <div
+            v-if="msg.role === 'assistant' && msg.content.includes('|')"
+            class="message styled-table"
           >
-            <div class="message-container">
-              <div
-                v-if="msg.role === 'assistant' && msg.content.includes('|')"
-                class="message styled-table"
-              >
-                <div v-html="renderMarkdown(msg.content)"></div>
-              </div>
-              <div
-                v-else
-                class="message"
-                v-html="
-                  msg.role === 'assistant'
-                    ? renderMarkdown(msg.content)
-                    : msg.content
-                "
-              ></div>
-              <span class="timestamp">{{ getCurrentTime() }}</span>
-            </div>
-          </li>
-          <li v-if="loading" class="assistant">
-            <div class="message-container loading-container">
-              <div class="spinner"></div>
-              <div class="loading-text">분석 중...</div>
-            </div>
-          </li>
-        </ul>
+            <div v-html="renderMarkdown(msg.content)"></div>
+          </div>
+          <div
+            v-else
+            class="message"
+            v-html="
+              msg.role === 'assistant'
+                ? renderMarkdown(msg.content)
+                : msg.content
+            "
+          ></div>
+          <span class="timestamp">{{ getCurrentTime() }}</span>
+        </div>
+
+        <div v-if="loading" class="message-container assistant-message">
+          <div class="spinner"></div>
+          <div class="loading-text">분석 중...</div>
+        </div>
       </div>
 
       <form @submit.prevent="sendMessage" class="input-container">
@@ -221,6 +216,31 @@ const renderMarkdown = (text) => {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-message {
+  align-self: flex-end;
+  background: var(--user-bg);
+  text-align: right;
+  color: var(--text-color);
+}
+
+.assistant-message {
+  align-self: flex-start;
+  background: var(--assistant-bg);
+  text-align: left;
+  color: var(--text-color);
+}
+
+.message-container {
+  max-width: 60%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 10px;
 }
 
 .modal-overlay {
